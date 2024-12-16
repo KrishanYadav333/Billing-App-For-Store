@@ -52,6 +52,9 @@ billing-app/
 └── bills/           # Directory where saved bills are stored
 ```
 
+## UI
+![image](https://github.com/user-attachments/assets/00e41d07-a478-459a-b7dc-8b3926fed522)
+
 ## Technologies Used
 
 - **Python**: Core programming language.
