@@ -1,17 +1,20 @@
 from tkinter import*
+from tkinter import Tk , messagebox, END
 import random
 import os
-from tkinter import messagebox
-
 
 class Bill_App:
     def __init__(self, root):
         self.root = root
-        self.root.geometry("1350x700+0+0")
         self.root.title("Billing software by Krishan")
+        self.root.geometry("1350x700+0+0")
+        self.search_bill = StringVar()
         bg_color = '#40E0D0'
         title = Label(self.root, text="Aahan Store Billing Dashboard", font=('times new roman', 30, 'bold'), pady=2, bd=12, bg="#40E0D0", fg="#186990", relief=GROOVE)
         title.pack(fill=X)
+        # Ensure the 'bills' directory exists
+        if not os.path.exists('bills'):
+            os.makedirs('bills')
 
         self.sanitizer = IntVar()
         self.mask = IntVar()
@@ -43,7 +46,7 @@ class Bill_App:
         self.bill_no = StringVar()
         x = random.randint(1000, 9999)
         self.bill_no.set(str(x))
-        self.search_bill = StringVar
+        self.search_bill = StringVar()
         
         self.medical_tax = StringVar()
         self.grocery_tax = StringVar()
@@ -62,9 +65,10 @@ class Bill_App:
         cphn_txt.grid(row=0,column=3, padx=10, pady=5)
         
         c_bill_lbl = Label(F1, text="Bill Number:", bg="#A7D8DE", font=('times new roman', 15, 'bold'))
-        c_bill_lbl.grid(row=0,column=4, padx=20, pady=5)
+        c_bill_lbl.grid(row=0, column=4, padx=20, pady=5)
+
         c_bill_txt = Entry(F1, width=15, textvariable=self.search_bill, font='arial 15', bd=7, relief=GROOVE)
-        c_bill_txt.grid(row=0,column=5, padx=10, pady=5)
+        c_bill_txt.grid(row=0, column=5, padx=10, pady=5)
         
         bill_btn = Button(F1, text="Search", command=self.find_bill, width=10, bd=7, font=('arial', 12, 'bold'),bg="#67b0d3", relief=GROOVE)
         bill_btn.grid(row=0,column=6, padx=10, pady=5)
@@ -169,9 +173,7 @@ class Bill_App:
         mountain_dew_lbl.grid(row=5,column=0, padx=10, pady=10,sticky='W')
         mountain_dew_text = Entry(F4, width=10, textvariable=self.mountain_dew, font=('times new roman', 16, 'bold'), bd=5, relief=GROOVE)
         mountain_dew_text.grid(row=5,column=1, padx=10, pady=10,sticky='W')                               
-                                 
-                               
-                               
+                                                       
         F5 = Frame(self.root, bd=10, relief=GROOVE)
         F5.place(x=1010,y=180,width=325,height=380) 
         
@@ -182,7 +184,6 @@ class Bill_App:
         scroll_y.pack(side=RIGHT, fill=Y)
         scroll_y.config(command=self.txtarea.yview)
         self.txtarea.pack(fill=BOTH,expand=1)
-        
         
         F6 = LabelFrame(self.root, text="Bill Details Area", font=('times new roman', 14, 'bold'), bd=10, fg='Black', bg="#40E0D0")
         F6.place(x=0,y=560,relwidth=1,height=140)
@@ -224,7 +225,6 @@ class Bill_App:
         total_btn= Button(btn_f, command=self.total, text="Total", fg = "black", bg="#67b0d3", bd=2, pady=15, width=12, font='arial 13 bold')
         total_btn.grid(row=0,column=0,padx=5,pady=5)
         
-        
         generateBill_btn= Button(btn_f, command=self.bill_area, text="Generate Bill", fg = "black", bg="#67b0d3", bd=2, pady=15, width=12, font='arial 13 bold')
         generateBill_btn.grid(row=0,column=1,padx=5,pady=5)        
         
@@ -237,233 +237,270 @@ class Bill_App:
         exit_btn.grid(row=0,column=3,padx=5,pady=5)        
         
     def total(self):
-        
-        self.m_s_p =self.sanitizer.get()*20
-        self.m_m_p =self.mask.get()*5
-        self.m_de_p =self.dettol.get()*30
-        self.m_h_g_p =self.handgloves.get()*12        
-        self.m_d_p =self.disprin.get()*2
-        self.m_t_g_p =self.thermal_gun.get()*150
-        
-        self.total_medical_price = float(self.m_s_p+self.m_m_p+self.m_de_p+self.m_h_g_p+self.m_d_p+self.m_t_g_p)
-        self.medical_price.set("Rs. "+str(self.total_medical_price))
-        self.m_tax = round((self.total_medical_price*0.05),2)
-        self.medical_tax.set("Rs. "+str(self.m_tax))
+        try:
+            # Medical Products
+            self.m_s_p = float(self.sanitizer.get() or 0) * 20
+            self.m_m_p = float(self.mask.get() or 0) * 5
+            self.m_de_p = float(self.dettol.get() or 0) * 30
+            self.m_h_g_p = float(self.handgloves.get() or 0) * 12
+            self.m_d_p = float(self.disprin.get() or 0) * 2
+            self.m_t_g_p = float(self.thermal_gun.get() or 0) * 150
+            
+            self.total_medical_price = self.m_s_p + self.m_m_p + self.m_de_p + self.m_h_g_p + self.m_d_p + self.m_t_g_p
+            self.medical_price.set(f"Rs. {self.total_medical_price}")
+            
+            self.m_tax = round(self.total_medical_price * 0.05, 2)
+            self.medical_tax.set(f"Rs. {self.m_tax}")
 
-        
-        self.g_r_p =self.rice.get()*100
-        self.g_f_o_p =self.food_oil.get()*150
-        self.g_w_p =self.wheat.get()*25
-        self.g_p_p =self.pulses.get()*45      
-        self.g_f_p =self.flour.get()*100
-        self.g_s_p =self.sugar.get()*60
-        
-        self.total_grocery_price = float(self.g_r_p+self.g_f_o_p+self.g_w_p+self.g_p_p+self.g_f_p+self.g_s_p)
-        self.grocery_price.set("Rs. "+str(self.total_grocery_price))
-        self.g_tax = round((self.total_grocery_price*0.05),2)
-        self.grocery_tax.set("Rs. "+str(self.g_tax))       
-        
-        
-        self.c_d_c_p =self.coke.get()*40
-        self.c_d_s_p =self.sprite.get()*40
-        self.c_d_l_p =self.limca.get()*40
-        self.c_d_f_p =self.fanta.get()*40        
-        self.c_d_m_p =self.maaza.get()*40
-        self.c_d_m_d_p =self.mountain_dew.get()*40 
-        
-        self.total_cold_drinks_price = float(self.c_d_c_p+self.c_d_s_p+self.c_d_l_p+self.c_d_f_p+self.c_d_m_p+self.c_d_m_d_p)
-        self.cold_drinks_price.set("Rs. "+str(self.total_cold_drinks_price))
-        self.c_d_tax = round((self.total_cold_drinks_price*0.1),2)
-        self.cold_drinks_tax.set("Rs. "+str(self.c_d_tax))
-        
+            # Grocery Products
+            self.g_r_p = float(self.rice.get() or 0) * 100
+            self.g_f_o_p = float(self.food_oil.get() or 0) * 150
+            self.g_w_p = float(self.wheat.get() or 0) * 25
+            self.g_p_p = float(self.pulses.get() or 0) * 45
+            self.g_f_p = float(self.flour.get() or 0) * 100
+            self.g_s_p = float(self.sugar.get() or 0) * 60
+            
+            self.total_grocery_price = self.g_r_p + self.g_f_o_p + self.g_w_p + self.g_p_p + self.g_f_p + self.g_s_p
+            self.grocery_price.set(f"Rs. {self.total_grocery_price}")
+            
+            self.g_tax = round(self.total_grocery_price * 0.05, 2)
+            self.grocery_tax.set(f"Rs. {self.g_tax}")
 
-        self.total_bill = float(self.total_medical_price+self.total_grocery_price+self.total_cold_drinks_price+self.m_tax+self.g_tax+self.c_d_tax)
-        
+            # Cold Drinks
+            self.c_d_c_p = float(self.coke.get() or 0) * 40
+            self.c_d_s_p = float(self.sprite.get() or 0) * 40
+            self.c_d_l_p = float(self.limca.get() or 0) * 40
+            self.c_d_f_p = float(self.fanta.get() or 0) * 40
+            self.c_d_m_p = float(self.maaza.get() or 0) * 40
+            self.c_d_m_d_p = float(self.mountain_dew.get() or 0) * 40
+            
+            self.total_cold_drinks_price = self.c_d_c_p + self.c_d_s_p + self.c_d_l_p + self.c_d_f_p + self.c_d_m_p + self.c_d_m_d_p
+            self.cold_drinks_price.set(f"Rs. {self.total_cold_drinks_price}")
+            
+            self.c_d_tax = round(self.total_cold_drinks_price * 0.1, 2)
+            self.cold_drinks_tax.set(f"Rs. {self.c_d_tax}")
+
+            # Total Bill
+            self.total_bill = self.total_medical_price + self.total_grocery_price + self.total_cold_drinks_price + self.m_tax + self.g_tax + self.c_d_tax
+            # You can set total_bill to an appropriate widget if needed
+            # Example: self.total.set(f"Rs. {self.total_bill}")
+            
+        except Exception as e:
+            print(f"Error in calculation: {e}")
+
     def welcome_bill(self):
         self.txtarea.delete('1.0', END)
         self.txtarea.insert(END, "Welcome to Aahan Retail Store")
-        self.txtarea.insert(END, f"\nBill Number:{self.bill_no.get()}")
-        self.txtarea.insert(END, f"\nCustomer Name:{self.c_name.get()}")
-        self.txtarea.insert(END, f"\nPhone Number:{self.c_phone.get()}")
+        self.txtarea.insert(END, f"\nBill Number: {self.bill_no.get()}")
+        self.txtarea.insert(END, f"\nCustomer Name: {self.c_name.get()}")
+        self.txtarea.insert(END, f"\nPhone Number: {self.c_phone.get()}")
         self.txtarea.insert(END, f"\n=================================")
 
+        # Fixed indentation here
         self.txtarea.insert(END, f"\nProducts\t\tQTY\tPrice")
-            
+
         
     def bill_area(self):
-        if self.c_name.get() == " " or self.c_phone.get() == " ":
-            messagebox.showerror("ERROR", "Customer Details are must")
+    # Ensure customer details are filled
+        if not self.c_name.get().strip() or not self.c_phone.get().strip():
+            messagebox.showerror("ERROR", "Customer Details are required")
+    # Ensure that products are purchased
         elif self.medical_price.get() == "Rs. 0.0" and self.grocery_price.get() == "Rs. 0.0" and self.cold_drinks_price.get() == "Rs. 0.0":
             messagebox.showerror("ERROR", "No Products Purchased")
         else:
             self.welcome_bill()
-            
-            
-            
+
+    # Insert purchased medical products into the bill
         if self.sanitizer.get() != 0:
             self.txtarea.insert(END, f"\nSanitizer\t\t{self.sanitizer.get()}\t{self.m_s_p}")
-        
-        
+
         if self.mask.get() != 0:
             self.txtarea.insert(END, f"\nMask\t\t{self.mask.get()}\t{self.m_m_p}")        
-        
-        
+
         if self.dettol.get() != 0:
             self.txtarea.insert(END, f"\nDettol\t\t{self.dettol.get()}\t{self.m_de_p}")        
-        
-        
+
         if self.handgloves.get() != 0:
             self.txtarea.insert(END, f"\nHand Gloves\t\t{self.handgloves.get()}\t{self.m_h_g_p}")        
-        
-        
+
         if self.disprin.get() != 0:
             self.txtarea.insert(END, f"\nDisprin\t\t{self.disprin.get()}\t{self.m_d_p}")        
-        
+
         if self.thermal_gun.get() != 0:
-            self.txtarea.insert(END, f"\nThermal Gun\t\t{self.thermal_gun.get()}\t\t{self.m_t_g_p}") 
-            
-            
+            self.txtarea.insert(END, f"\nThermal Gun\t\t{self.thermal_gun.get()}\t{self.m_t_g_p}") 
+
+        # Insert purchased grocery products into the bill
         if self.rice.get() != 0:
-            self.txtarea.insert(END, f"\nRice\t\t{self.rice.get()}\t\t{self.g_r_p}")
-        
-        
+            self.txtarea.insert(END, f"\nRice\t\t{self.rice.get()}\t{self.g_r_p}")
+
         if self.food_oil.get() != 0:
-            self.txtarea.insert(END, f"\nFood Oil\t\t{self.food_oil.get()}\t\t{self.g_f_o_p}")        
-        
-        
+            self.txtarea.insert(END, f"\nFood Oil\t\t{self.food_oil.get()}\t{self.g_f_o_p}")        
+
         if self.wheat.get() != 0:
-            self.txtarea.insert(END, f"\nWheat\t\t{self.wheat.get()}\t\t{self.g_w_p}")        
-        
-        
+            self.txtarea.insert(END, f"\nWheat\t\t{self.wheat.get()}\t{self.g_w_p}")        
+
         if self.pulses.get() != 0:
-            self.txtarea.insert(END, f"\nPulses\t\t{self.pulses.get()}\t\t{self.g_p_p}")        
-        
-        
+            self.txtarea.insert(END, f"\nPulses\t\t{self.pulses.get()}\t{self.g_p_p}")        
+
         if self.flour.get() != 0:
-            self.txtarea.insert(END, f"\nFlour\t\t{self.flour.get()}\t\t{self.g_f_p}")        
-        
+            self.txtarea.insert(END, f"\nFlour\t\t{self.flour.get()}\t{self.g_f_p}")        
+
         if self.sugar.get() != 0:
-            self.txtarea.insert(END, f"\nSugar\t\t{self.sugar.get()}\t\t{self.g_s_p}")             
-            
-            
-            
+            self.txtarea.insert(END, f"\nSugar\t\t{self.sugar.get()}\t{self.g_s_p}")             
+
+        # Insert purchased cold drinks into the bill
         if self.coke.get() != 0:
-            self.txtarea.insert(END, f"\nCoke\t\t{self.coke.get()}\t\t{self.c_d_c_p}")
-        
-        
+            self.txtarea.insert(END, f"\nCoke\t\t{self.coke.get()}\t{self.c_d_c_p}")
+
         if self.sprite.get() != 0:
-            self.txtarea.insert(END, f"\nSprite\t\t{self.sprite.get()}\t\t{self.c_d_s_p}")        
-        
-        
+            self.txtarea.insert(END, f"\nSprite\t\t{self.sprite.get()}\t{self.c_d_s_p}")        
+
         if self.limca.get() != 0:
-            self.txtarea.insert(END, f"\nLimca\t\t{self.limca.get()}\t\t{self.c_d_l_p}")        
-        
-        
+            self.txtarea.insert(END, f"\nLimca\t\t{self.limca.get()}\t{self.c_d_l_p}")        
+
         if self.fanta.get() != 0:
-            self.txtarea.insert(END, f"\nFanta\t\t{self.fanta.get()}\t\t{self.c_d_f_p}")        
-        
-        
+            self.txtarea.insert(END, f"\nFanta\t\t{self.fanta.get()}\t{self.c_d_f_p}")        
+
         if self.maaza.get() != 0:
-            self.txtarea.insert(END, f"\nMaaza\t\t{self.maaza.get()}\t\t{self.c_d_m_p}")        
-        
+            self.txtarea.insert(END, f"\nMaaza\t\t{self.maaza.get()}\t{self.c_d_m_p}")        
+
         if self.mountain_dew.get() != 0:
-            self.txtarea.insert(END, f"\nMountain Dew\t\t{self.mountain_dew.get()}\t\t{self.c_d_m_d_p}")             
-            self.txtarea.insert(END, f"\n=================================")
-            
-        if self.medical_tax.get() !=  '0.0':
-            self.txtarea.insert(END, f"\n Medical Tax\t\t\t{self.medical_tax.get()}")                               
-            
-            
-        if self.grocery_tax.get() !=  '0.0':
-            self.txtarea.insert(END, f"\n Grocery Tax\t\t\t{self.grocery_tax.get()}")            
-            
-        if self.cold_drinks_tax.get() !=  '0.0':
-            self.txtarea.insert(END, f"\n Cold Drinks Tax\t\t\t{self.cold_drinks_tax.get()}")                              
-            
-            
-        self.txtarea.insert(END, f"\n Total Bill:\t\t\t Rs.{self.total_bill}")            
+            self.txtarea.insert(END, f"\nMountain Dew\t\t{self.mountain_dew.get()}\t{self.c_d_m_d_p}")             
+
+        # Add line separator
         self.txtarea.insert(END, f"\n=================================")
+
+        # Add taxes to the bill
+        if self.medical_tax.get() != 0:
+            self.txtarea.insert(END, f"\nMedical Tax\t\t{self.medical_tax.get()}")                               
+
+        if self.grocery_tax.get() != 0:
+            self.txtarea.insert(END, f"\nGrocery Tax\t\t{self.grocery_tax.get()}")            
+
+        if self.cold_drinks_tax.get() != 0:
+            self.txtarea.insert(END, f"\nCold Drinks Tax\t\t{self.cold_drinks_tax.get()}")                              
+
+        # Display total bill
+        self.txtarea.insert(END, f"\nTotal Bill:\t\t\tRs. {self.total_bill}")            
+        self.txtarea.insert(END, f"\n=================================")
+
+        # Save the bill after everything has been printed
         self.save_bill()
-        
-                                
-                                
-                                
+                            
     def save_bill(self):
         op = messagebox.askyesno("Save Bill", "Do You want to save the bill?")
-        if op>0:
-            self.bill_data = self.txtarea.get('1.0', END)
-            f1 = open("bills/"+str(self.bill_no.get())+".txt", "w")
-            f1.write(self.bill_data)
-            f1.close()
-            messagebox.showinfo("Saved", f"Bill no.{self.bill_no.get()} Saved Successfully")
-                                
+        if op > 0:
+            try:
+                self.bill_data = self.txtarea.get('1.0', END)
+                file_path = f"bills/{str(self.bill_no.get())}.txt"
+                with open(file_path, "w") as f1:
+                    f1.write(self.bill_data)
+                messagebox.showinfo("Saved", f"Bill no.{self.bill_no.get()} Saved Successfully")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to save the bill: {e}")
         else:
-            return
-            
-            
+            return 
+
+
     def find_bill(self):
-        present ="no"
-        for i in os.listdir("bills/"):
-            if i.split('.')[0] == self.search_bill.get():
-                f1 =open(f"bills/{i}", "r")
-                self.txtarea.delete("1.0", END)
-                for d in f1:
-                    self.txtarea.insert(END, d)
-                    f1.close()
-                present = "yes"
-        if present == "no":
-            messegebox.showerror("ERROR", "Invalid Bill Number")
-            
-            
-            
+        bills_directory = "bills"
+        # Ensure the 'bills' directory exists
+        if not os.path.exists(bills_directory):
+            messagebox.showerror("Error", f"'{bills_directory}' directory not found.")
+            return
+
+        # Get the bill number from the input field
+        bill_no = self.search_bill.get().strip()
+        if not bill_no:
+            messagebox.showerror("Error", "Please enter a valid bill number.")
+            return
+
+        # Construct the file path
+        file_path = os.path.join(bills_directory, f"{bill_no}.txt")
+        print(f"Looking for file: {file_path}")  # Debug statement
+
+        # Check if the file exists
+        if os.path.exists(file_path):
+            try:
+                # Read the file content
+                with open(file_path, "r") as file:
+                    content = file.read()
+                    print(f"File content:\n{content}")  # Debug statement
+
+                # Display the content in the Text widget
+                self.txtarea.delete("1.0", END)  # Clear existing content
+                self.txtarea.insert(END, content)  # Insert the bill content
+                messagebox.showinfo("Success", f"Bill {bill_no} found and displayed.")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to read the bill: {e}")
+                print(f"Exception: {e}")
+        else:
+            messagebox.showerror("Error", f"Bill {bill_no} not found.")
+
     def clear_data(self):
-        op = messagebox.askyesno("Clear", "Do You relly want to clear?")
-        if op>0:
+        # Ask the user if they really want to clear the data
+        op = messagebox.askyesno("Clear", "Do You really want to clear?")
+        
+        if op:  # Check if op is True (Yes clicked)
+            # Reset all product quantities to 0
             self.sanitizer.set(0)
             self.mask.set(0)
             self.dettol.set(0)
             self.handgloves.set(0)
             self.disprin.set(0)
             self.thermal_gun.set(0)
-                         
+                            
             self.rice.set(0)
             self.food_oil.set(0)
             self.wheat.set(0)
             self.pulses.set(0)
             self.flour.set(0)
             self.sugar.set(0)
-                         
+                            
             self.coke.set(0)
             self.sprite.set(0)
             self.limca.set(0)
             self.fanta.set(0)
             self.maaza.set(0)
             self.mountain_dew.set(0)
-                                
-                                
+                                    
+            # Clear price fields
             self.medical_price.set("")
             self.grocery_price.set("")
             self.cold_drinks_price.set("")
 
+            # Clear tax fields
             self.medical_tax.set("")
             self.grocery_tax.set("")
             self.cold_drinks_tax.set("")
 
+            # Clear customer details
             self.c_name.set("")
             self.c_phone.set("")
             
+            # Reset bill number and generate a new one
             self.bill_no.set("")
-            x = random.randint(1000, 9999)
-            self.bill_no.set(str(x))    
-                                
-                                
-    def exit_app(self):
-        op = messagebox.askyesno("Exit", "Do You relly want to exit?")
-        if op>0:
-            self.root.destroy()
+            x = random.randint(1000, 9999)  # Generate a random bill number
+            self.bill_no.set(str(x))  # Set the new bill number
+            
+            # Clear the bill details area
+            self.txtarea.delete('1.0', END)
+            # self.welcome_bill()  # Reset to the welcome message
 
-                                
-                                
-root = Tk()
-obj = Bill_App(root)
-root.mainloop()
+            # Reset total bill amount
+            self.total_bill = 0
+        
+            # Clear any error messages or status updates
+            self.root.update()
+        
+            messagebox.showinfo("Clear", "All data has been cleared successfully!")
+                                        
+    def exit_app(self):
+            op = messagebox.askyesno("Exit", "Do You really want to exit?")
+            if op:  # Check if op is True (Yes clicked)
+                self.root.destroy()  # Close the application window
+
+if __name__ == "__main__":
+    root = Tk()  # Initialize the Tkinter window
+    obj = Bill_App(root)  # Create an instance of the Bill_App class
+    root.mainloop()  # Start the Tkinter event loop
